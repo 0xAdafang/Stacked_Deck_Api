@@ -5,4 +5,10 @@ import java.util.Set;
 import java.util.UUID;
 import com.adafangcards.user.Role;
 
-public record UserDto(UUID id, String email, String username, boolean enabled, Set<Role> roles) {}
+public record UserDto(
+        UUID id,
+        String email,
+        String username,
+        boolean enabled,
+        Set<Role> roles
+) {}

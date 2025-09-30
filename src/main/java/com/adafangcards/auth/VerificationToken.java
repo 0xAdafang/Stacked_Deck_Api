@@ -12,6 +12,6 @@ public class VerificationToken {
     @Id @GeneratedValue private UUID id;
     @Column(nullable=false, unique=true) private String token;
     @Column(nullable=false) private UUID userId;
-    @Column(nullable=false) private Instant expiryAt;
+    @Column(nullable=false) private Instant expiresAt;
     private Instant consumedAt;
 }

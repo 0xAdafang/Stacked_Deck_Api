@@ -1,10 +1,12 @@
 package com.adafangcards.auth;
 
 import com.adafangcards.auth.dto.*;
+import com.adafangcards.auth.repo.VerificationTokenRepository;
 import com.adafangcards.notifications.EmailService;
 import com.adafangcards.notifications.NotifyService;
 import com.adafangcards.security.JwtService;
 import com.adafangcards.user.*;
+import com.adafangcards.user.dto.*;
 import com.adafangcards.user.repo.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,8 @@ public class AuthService {
 
     private final UserRepository users;
     private final VerificationTokenRepository tokens;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final PasswordEncoder encoder;
+    private final JwtService jwt;
     private final NotifyService notify;
     private final EmailService email;
 
@@ -67,7 +69,7 @@ public class AuthService {
     if (vt.getConsumedAt()!= null || vt.getExpiresAt().isBefore(Instant.now()))
         throw new IllegalArgumentException("Token invalid or expired");
 
-    var user = users.findById(vt.getUserId()).orElseThrow()
+    var user = users.findById(vt.getUserId()).orElseThrow();
         user.setEnabled(true);
         users.save(user);
         vt.setConsumedAt(Instant.now());
@@ -93,8 +95,7 @@ public class AuthService {
         var dto = new UserDto(user.getId(), user.getEmail(), user.getUsername(), user.isEnabled(), user.getRoles());
         return new AuthResponse(token, dto);
     }
-    }
-
-
-
 }
+
+
+
