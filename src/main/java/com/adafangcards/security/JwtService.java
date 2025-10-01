@@ -14,8 +14,8 @@ import java.util.Map;
 public class JwtService {
     private final byte[] key;
     private final long accessExpMin;
-    public JwtService(@Value("${app.jwt.secret") String secret,
-                      @Value("${app.jwt.access-exp-min") long accessExpMin) {
+    public JwtService(@Value("${app.jwt.secret}") String secret,
+                      @Value("${app.jwt.access-exp-min}") long accessExpMin) {
         this.key = secret.getBytes(StandardCharsets.UTF_8);
         this.accessExpMin = accessExpMin;
     }

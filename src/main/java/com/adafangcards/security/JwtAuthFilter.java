@@ -12,7 +12,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
-import java.io.IO;
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;

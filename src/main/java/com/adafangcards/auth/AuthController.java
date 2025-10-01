@@ -14,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService service;
-    @Value("${app.frontend.url}") String frontUrl;
+    @Value("${app.frontend.base-url}") String frontUrl;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest req) {
