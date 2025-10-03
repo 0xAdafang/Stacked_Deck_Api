@@ -2,6 +2,7 @@ package com.adafangcards.auth;
 
 import com.adafangcards.auth.dto.LoginRequest;
 import com.adafangcards.auth.dto.RegisterRequest;
+import com.adafangcards.auth.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,7 +20,8 @@ class AuthControllerTest {
 
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper om;
-    @Autowired AuthService service;
+    @Autowired
+    AuthService service;
 
     @Test
     void register_return_202() throws Exception {

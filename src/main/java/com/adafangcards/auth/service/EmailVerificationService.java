@@ -1,4 +1,4 @@
-package com.adafangcards.auth;
+package com.adafangcards.auth.service;
 
 public class EmailVerificationService {
 }

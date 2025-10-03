@@ -1,6 +1,7 @@
 package com.adafangcards.auth;
 
 import com.adafangcards.auth.dto.*;
+import com.adafangcards.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +29,28 @@ public class AuthController {
         return new RedirectView(frontUrl + "/login?verified");
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@CookieValue(name = "${app.refresh.cookie-name}", required = false) String raw) {
+        var resp = service.refresh(raw);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, service.buildRefreshSetCookie(resp.rawRefresh()))
+                .body(resp.auth());
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
-        return ResponseEntity.ok(service.login(req));
+        var result = service.login(req);
+        var rawRefreshToken = service.issueRefreshForCurrentUser();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, service.buildRefreshCookie(rawRefreshToken, true))
+                .body(result);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(name = "${app.refresh.cookie-name}", required = false) String raw) {
+        service.logout(raw);
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, service.buildRefreshClearCookie())
+                .build();
     }
 }

@@ -1,5 +1,6 @@
-package com.adafangcards.auth;
+package com.adafangcards.auth.service;
 
+import com.adafangcards.auth.VerificationToken;
 import com.adafangcards.auth.dto.*;
 import com.adafangcards.auth.repo.VerificationTokenRepository;
 import com.adafangcards.notifications.EmailService;
@@ -28,8 +29,12 @@ public class AuthService {
     private final JwtService jwt;
     private final NotifyService notify;
     private final EmailService email;
+    private final RefreshTokenService refreshTokens;
+
 
     @Value("${app.frontend.base-url}") String frontUrl;
+    @Value("${app.refresh.exp-days}") int refreshExpDays;
+    @Value("${app.refresh.cookie-name}") String refreshCookieName;
 
     @Transactional
     public void register(RegisterRequest req) {
@@ -57,9 +62,9 @@ public class AuthService {
 
         var link = frontUrl + "/auth/verify?token=" + token;
         email.send(user.getEmail(), "Verify your email - Adafang's Cards",
-                "Welcome " + user.getUsername() + "!\n\nClique pour vérifier: " + link);
+                "Welcome " + user.getUsername() + "!\n\n Click to verify: " + link);
 
-        notify.broadcast("🆕 Nouveau compte créé: @" + user.getUsername());
+        notify.broadcast("🆕 New account created: @" + user.getUsername());
 
     }
 
@@ -75,7 +80,7 @@ public class AuthService {
         vt.setConsumedAt(Instant.now());
         tokens.save(vt);
 
-        notify.broadcast("✅ Compte vérifié: @" + user.getUsername());
+        notify.broadcast("✅ Account Verified: @" + user.getUsername());
     }
 
     public AuthResponse login(LoginRequest req) {
@@ -90,11 +95,56 @@ public class AuthService {
 
         var claims = new HashMap<String,Object>();
         claims.put("roles", user.getRoles().stream().map(Enum::name).toArray(String[]::new));
-        var token = jwt.generate(claims, user.getId().toString());
+
+        var accessToken = jwt.generateAccess(claims, user.getId().toString());
+
+        var refreshToken = refreshTokens.issue(user.getId(), refreshExpDays);
+
 
         var dto = new UserDto(user.getId(), user.getEmail(), user.getUsername(), user.isEnabled(), user.getRoles());
-        return new AuthResponse(token, dto);
+        return new AuthResponse(accessToken, dto, refreshToken.getTokenHash());
     }
+
+    public String buildRefreshCookie(String raw, boolean clear) {
+        var maxAge = clear ? 0 : refreshExpDays * 24 * 3600;
+
+        return "%s=%s; Path=/api/auth; Max-Age=%d; HttpOnly; SameSite=Lax".formatted(
+                refreshCookieName, clear ? "" : raw, maxAge);
+    }
+
+    public String buildRefreshSetCookie(String raw) { return buildRefreshCookie(raw, false); }
+    public String buildRefreshClearCookie() { return buildRefreshCookie("", true); }
+
+    public String issueRefreshForCurrentUser() {throw new UnsupportedOperationException();}
+
+    @Transactional
+    public RefreshResult refresh(String raw) {
+        if (raw == null || raw.isBlank()) throw new IllegalArgumentException("No refresh token");
+        var rt = refreshTokens.validationAndLoad(raw).orElseThrow(() -> new IllegalArgumentException("Invalid refresh"));
+        // charger user
+        var user = users.findById(rt.getUserId()).orElseThrow();
+        if (!user.isEnabled()) throw new IllegalStateException("User disabled");
+
+
+        refreshTokens.revoke(rt);
+        var newRt = refreshTokens.issue(user.getId(), refreshExpDays);
+
+        var claims = new HashMap<String,Object>();
+        claims.put("roles", user.getRoles().stream().map(Enum::name).toArray(String[]::new));
+        var access = jwt.generateAccess(claims, user.getId().toString());
+        var dto = new UserDto(user.getId(), user.getEmail(), user.getUsername(), user.isEnabled(), user.getRoles());
+        return new RefreshResult(new AuthResponse(access, dto, newRt.getTokenHash()), newRt.getTokenHash()); // tokenHash porte RAW
+    }
+
+    @Transactional
+    public void logout(String raw) {
+        if (raw == null || raw.isBlank()) return;
+        refreshTokens.validationAndLoad(raw).ifPresent(refreshTokens::revoke);
+    }
+
+
+
+
 }
 
 
