@@ -1,4 +1,4 @@
-package com.adafangcards.security;
+package com.adafangcards.auth;
 
 import jakarta.persistence.*;
 import lombok.*;
