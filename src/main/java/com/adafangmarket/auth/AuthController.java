@@ -55,7 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<Void> forgot(@RequestParam String email) { service.forgotPassword(email); return ResponseEntity.accepted().build(); }
+    public ResponseEntity<Void> forgot(@RequestParam String email) { service.resetPassword(email); return ResponseEntity.accepted().build(); }
 
     @PostMapping("/reset-password")
     public ResponseEntity<Void> reset(@RequestParam String token, @RequestParam String newPassword) { service.resetPassword(token, newPassword); return ResponseEntity.noContent().build(); }

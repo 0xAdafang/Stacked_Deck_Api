@@ -143,20 +143,38 @@ public class AuthService {
     }
 
 
-    public void forgotPassword(String emailAddress) {
-        var userOpt = users.findByEmail(emailAddress);
-        if (userOpt.isEmpty()) return;
-        var user = userOpt.get();
-        var token = UUID.randomUUID().toString().replace("-", "");
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        var vt = tokens.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
+        if (vt.getConsumedAt() != null || vt.getExpiresAt().isBefore(Instant.now()))
+            throw new IllegalArgumentException("Token already expired or used");
+
+        var user = users.findById(vt.getUserId()).orElseThrow();
+        user.setPasswordHash(encoder.encode(newPassword));
+        users.save(user);
+
+        vt.setConsumedAt(Instant.now());
+        tokens.save(vt);
+    }
+
+    @Transactional
+    public void resetPassword(String userEmail) {
+        var user = users.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("No user with this email"));
+        var token = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
         tokens.save(VerificationToken.builder()
                 .token(token)
                 .userId(user.getId())
                 .expiresAt(Instant.now().plus(1, ChronoUnit.HOURS))
                 .build());
-        var link = frontUrl + "/auth/reset-password?token=" + token;
-        email.send(user.getEmail(), "Reset your password - Adafang's Market",
+        var link = frontUrl + "/reset-password?token=" + token;
+        email.send(user.getEmail(), "Reset your password - Adafang Market",
                 "Hello " + user.getUsername() + "!\n\n Click to reset your password: " + link);
     }
+
+
+
 
 }
 
