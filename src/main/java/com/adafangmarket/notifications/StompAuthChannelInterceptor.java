@@ -17,7 +17,10 @@ public class StompAuthChannelInterceptor implements ChannelInterceptor {
         var accessor = StompHeaderAccessor.wrap(message);
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             var auth = accessor.getFirstNativeHeader("Authorization");
-            if (auth != null || !auth.startsWith("Bearer ")) {throw new IllegalArgumentException("Missing token");}
+            if (auth == null || !auth.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Missing token");
+            }
+
             jwtService.parse(auth.substring(7));
 
         }
