@@ -1,5 +1,6 @@
 package com.adafangcards.security;
 
+import com.adafangcards.security.service.JwtService;
 import com.adafangcards.user.repo.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

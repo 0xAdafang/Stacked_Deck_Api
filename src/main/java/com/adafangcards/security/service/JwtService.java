@@ -1,4 +1,4 @@
-package com.adafangcards.security;
+package com.adafangcards.security.service;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

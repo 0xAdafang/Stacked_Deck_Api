@@ -5,7 +5,7 @@ import com.adafangcards.auth.dto.*;
 import com.adafangcards.auth.repo.VerificationTokenRepository;
 import com.adafangcards.notifications.EmailService;
 import com.adafangcards.notifications.NotifyService;
-import com.adafangcards.security.JwtService;
+import com.adafangcards.security.service.JwtService;
 import com.adafangcards.user.*;
 import com.adafangcards.user.dto.*;
 import com.adafangcards.user.repo.UserRepository;
