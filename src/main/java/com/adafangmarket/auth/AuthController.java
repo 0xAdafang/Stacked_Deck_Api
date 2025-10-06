@@ -40,9 +40,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
         var result = service.login(req);
-        var rawRefreshToken = service.issueRefreshForCurrentUser();
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, service.buildRefreshCookie(rawRefreshToken, true))
+                .header(HttpHeaders.SET_COOKIE, service.buildRefreshSetCookie(result.refreshCookie().toString()))
                 .body(result);
     }
 

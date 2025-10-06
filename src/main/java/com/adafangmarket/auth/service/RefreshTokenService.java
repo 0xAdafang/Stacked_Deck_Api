@@ -1,6 +1,7 @@
 package com.adafangmarket.auth.service;
 
 import com.adafangmarket.auth.RefreshToken;
+import com.adafangmarket.auth.dto.IssuedRefreshToken;
 import com.adafangmarket.auth.repo.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +18,18 @@ public class RefreshTokenService {
     private final RefreshTokenRepository repo;
     private final PasswordEncoder encoder;
 
-    public RefreshToken issue(UUID userId, int expDays) {
-        var raw = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID();
+    public IssuedRefreshToken issue(UUID userId, int expDays) {
+        var raw = UUID.randomUUID().toString().replace("-", "") + UUID.randomUUID().toString().replace("-", "");
+        var hash = encoder.encode(raw);
+
         var rt = RefreshToken.builder()
                 .userId(userId)
-                .tokenHash(encoder.encode(raw))
+                .tokenHash(hash)
                 .expiresAt(Instant.now().plus(expDays, ChronoUnit.DAYS))
                 .build();
         repo.save(rt);
-        rt.setTokenHash(raw);
-        return rt;
+
+        return new IssuedRefreshToken(raw, hash);
     }
 
     public Optional<RefreshToken> validationAndLoad(String raw) {

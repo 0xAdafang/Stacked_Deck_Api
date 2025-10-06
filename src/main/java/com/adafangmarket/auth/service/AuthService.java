@@ -61,7 +61,7 @@ public class AuthService {
                 .build());
 
         var link = frontUrl + "/auth/verify?token=" + token;
-        email.send(user.getEmail(), "Verify your email - Adafang's Cards",
+        email.send(user.getEmail(), "Verify your email - Adafang's Market",
                 "Welcome " + user.getUsername() + "!\n\n Click to verify: " + link);
 
         notify.broadcast("🆕 New account created: @" + user.getUsername());
@@ -102,7 +102,7 @@ public class AuthService {
 
 
         var dto = new UserDto(user.getId(), user.getEmail(), user.getUsername(), user.isEnabled(), user.getRoles());
-        return new AuthResponse(accessToken, dto, refreshToken.getTokenHash());
+        return new AuthResponse(accessToken, dto, refreshToken.rawToken());
     }
 
     public String buildRefreshCookie(String raw, boolean clear) {
@@ -121,7 +121,7 @@ public class AuthService {
     public RefreshResult refresh(String raw) {
         if (raw == null || raw.isBlank()) throw new IllegalArgumentException("No refresh token");
         var rt = refreshTokens.validationAndLoad(raw).orElseThrow(() -> new IllegalArgumentException("Invalid refresh"));
-        // charger user
+
         var user = users.findById(rt.getUserId()).orElseThrow();
         if (!user.isEnabled()) throw new IllegalStateException("User disabled");
 
@@ -133,7 +133,7 @@ public class AuthService {
         claims.put("roles", user.getRoles().stream().map(Enum::name).toArray(String[]::new));
         var access = jwt.generateAccess(claims, user.getId().toString());
         var dto = new UserDto(user.getId(), user.getEmail(), user.getUsername(), user.isEnabled(), user.getRoles());
-        return new RefreshResult(new AuthResponse(access, dto, newRt.getTokenHash()), newRt.getTokenHash()); // tokenHash porte RAW
+        return new RefreshResult(new AuthResponse(access, dto, newRt.rawToken()), newRt.rawToken());
     }
 
     @Transactional
