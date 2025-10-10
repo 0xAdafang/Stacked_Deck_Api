@@ -1,4 +1,15 @@
 package com.adafangmarket.catalog.repo;
 
-public class CategoryRepository {
+import com.adafangmarket.catalog.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import javax.swing.text.html.Option;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+public interface CategoryRepository extends JpaRepository<Category, UUID> {
+    Optional<Category> findBySlug(String slug);
+    List<Category> findByParentIsNullOrderByPositionAsc();
+
 }
