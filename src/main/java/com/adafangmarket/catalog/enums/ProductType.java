@@ -1,4 +1,5 @@
 package com.adafangmarket.catalog.enums;
 
-public class ProductType {
+public enum ProductType {
+    SINGLE_CARD, ETB, BOOSTER, BUNDLE, ACCESSORY
 }
