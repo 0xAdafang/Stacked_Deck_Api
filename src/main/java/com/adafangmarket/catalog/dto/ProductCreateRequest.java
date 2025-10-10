@@ -1,4 +1,25 @@
 package com.adafangmarket.catalog.dto;
 
-public class ProductCreateRequest {
-}
+import com.adafangmarket.catalog.enums.ProductType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.UUID;
+
+import java.time.Instant;
+import java.util.List;
+
+public record ProductCreateRequest (
+        @NotBlank String sku,
+        @NotBlank String name,
+        @NotBlank String slug,
+        String description,
+        List<String> images,
+        @NotNull ProductType type,
+        @NotNull Long baseAmount,
+        @NotBlank String currency,
+        Long promoAmount,
+        Instant promoStart,
+        Instant promoEnd,
+        UUID categoryId,
+        Boolean active
+) {}
