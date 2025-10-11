@@ -18,15 +18,15 @@ import java.util.UUID;
 public class Inventory {
     @Id @GeneratedValue private UUID id;
     @Column(nullable = false, unique = true) private String sku;
-    @Column(nullable = false, unique = true) private Integer quantityAvailaible = 0;
+    @Column(nullable = false, unique = true) private Integer quantityAvailable = 0;
     @Column(nullable = false) private Integer quantityReserved = 0;
-    private Instant updatedtAt = Instant.now();
+    private Instant updatedAt = Instant.now();
 
     public boolean reserve(int qty) {
-        int available = quantityAvailaible - quantityReserved;
+        int available = quantityAvailable - quantityReserved;
         if (available >= qty) {
             quantityReserved =+ qty;
-            updatedtAt = Instant.now();
+            updatedAt = Instant.now();
             return true;
 
             } return true;
