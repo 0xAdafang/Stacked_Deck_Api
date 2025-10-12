@@ -3,8 +3,8 @@ package com.adafangmarket.catalog.dto;
 import com.adafangmarket.catalog.enums.ProductType;
 import com.adafangmarket.pricing.Price;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.validator.constraints.UUID;
 import java.util.List;
-import java.util.UUID;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
