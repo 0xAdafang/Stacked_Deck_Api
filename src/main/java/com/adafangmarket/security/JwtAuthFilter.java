@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,16 +28,22 @@ public class JwtAuthFilter extends GenericFilter{
         throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(header) && header.startsWith("Bearer")) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ") && header.length() > 7) {
             String token = header.substring(7);
             try {
                 Claims c = jwt.parse(token).getBody();
                 var userId = c.getSubject();
-                var roles = (Set<String>) c.get("roles", Set.class);
-                var auths = roles.stream().map(r -> new SimpleGrantedAuthority("ROLE_" + r)).collect(Collectors.toSet());
-                Authentication auth = new UsernamePasswordAuthenticationToken(auths, userId, null);
+                @SuppressWarnings("unchecked")
+                List<String> roles = c.get("roles", List.class);
+                var auths = roles.stream()
+                        .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                        .collect(Collectors.toSet());
+
+                Authentication auth = new UsernamePasswordAuthenticationToken(userId, null, auths);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+
+            }
         }
         chain.doFilter(req, res);
 

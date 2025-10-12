@@ -34,7 +34,7 @@ public class JwtService {
 
     public String generateAccess(Map<String, Object> claims, String userId) {
         Instant now = Instant.now();
-        Instant exp = now.plusSeconds(accessExpMin);
+        Instant exp = now.plusSeconds(accessExpMin * 60);
 
         return Jwts.builder()
                 .setClaims(claims)

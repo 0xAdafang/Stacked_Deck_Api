@@ -27,7 +27,7 @@ public class Product {
     @Column(nullable = false, unique = true) private String sku;
     @Column(nullable = false) private String name;
     @Column(nullable = false, unique = true) private String slug;
-    @Lob private String description;
+    @Column(columnDefinition = "TEXT") private String description;
     @ElementCollection private List<String> images = new ArrayList<>();
     @Enumerated(EnumType.STRING) private ProductType type;
     @Embedded private Price price;
