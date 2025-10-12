@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
+import java.util.Optional;
 
 @Entity @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Table(indexes = {

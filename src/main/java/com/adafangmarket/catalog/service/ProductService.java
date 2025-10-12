@@ -7,6 +7,7 @@ import com.adafangmarket.catalog.dto.ProductCreateRequest;
 import com.adafangmarket.catalog.dto.ProductDto;
 import com.adafangmarket.catalog.enums.ProductType;
 import com.adafangmarket.catalog.mapper.CatalogMapper;
+import com.adafangmarket.catalog.repo.CategoryRepository;
 import com.adafangmarket.catalog.repo.InventoryRepository;
 import com.adafangmarket.catalog.repo.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class ProductService {
     private final CategoryService categories;
     private final CatalogMapper mapper;
     private final InventoryRepository inventory;
+    private final CategoryRepository categoryRepository;
 
     public Page<ProductDto> search(String q, ProductType type, UUID categoryId, Boolean inStock, Pageable pg ) {
         Specification<Product> spec = activeTrue();
@@ -46,11 +49,14 @@ public class ProductService {
 
     @Transactional
     public ProductDto create(ProductCreateRequest req) {
-        if(products.findBySku(req.sku()).isPresent())
+        if (products.findBySku(req.sku()).isPresent())
             throw new ResponseStatusException(HttpStatus.CONFLICT, "SKU already exists");
+
         Category cat = null;
-        if (req.categoryId() != null) cat = categories.findById(req.categoryId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
+        if (req.categoryId() != null) {
+            cat = categoryRepository.findById(req.categoryId()) // Utilise le repository directement
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
+        }
 
         var p = new Product();
         mapper.updateEntity(p, req, cat);
@@ -68,9 +74,13 @@ public class ProductService {
     public ProductDto update(UUID id, ProductCreateRequest req) {
         var p = products.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
         Category cat = null;
-        if (req.categoryId() != null) cat = categories.findById(req.categoryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category"));
+        if (req.categoryId() != null) {
+            cat = categoryRepository.findById(req.categoryId()) // Utilise le repository directement
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Category"));
+        }
+
         mapper.updateEntity(p, req, cat);
         return mapper.toDto(products.save(p));
     }

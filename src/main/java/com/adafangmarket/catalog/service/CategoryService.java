@@ -16,6 +16,11 @@ import java.util.UUID;
 public class CategoryService {
     private final CategoryRepository categories;
 
+    public Category findById(UUID id) {
+        return categories.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+    }
+
     public List<CategoryDto> treeRoot() {
         return categories.findByParentIsNullOrderByPositionAsc()
                 .stream().map(this::toDto).toList();

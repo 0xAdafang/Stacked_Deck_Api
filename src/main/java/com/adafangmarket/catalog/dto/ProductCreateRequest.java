@@ -3,7 +3,7 @@ package com.adafangmarket.catalog.dto;
 import com.adafangmarket.catalog.enums.ProductType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.UUID;
+import java.util.UUID;
 
 import java.time.Instant;
 import java.util.List;
