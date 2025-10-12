@@ -54,7 +54,7 @@ public class ProductService {
 
         Category cat = null;
         if (req.categoryId() != null) {
-            cat = categoryRepository.findById(req.categoryId()) // Utilise le repository directement
+            cat = categoryRepository.findById(req.categoryId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Category not found"));
         }
 
