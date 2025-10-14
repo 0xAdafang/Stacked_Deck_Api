@@ -1,5 +1,6 @@
 package com.adafangmarket.auth;
 
+import com.adafangmarket.auth.controller.AuthController;
 import com.adafangmarket.auth.dto.LoginRequest;
 import com.adafangmarket.auth.dto.RegisterRequest;
 import com.adafangmarket.auth.service.AuthService;

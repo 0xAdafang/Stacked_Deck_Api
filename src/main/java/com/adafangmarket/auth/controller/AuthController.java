@@ -1,4 +1,4 @@
-package com.adafangmarket.auth;
+package com.adafangmarket.auth.controller;
 
 import com.adafangmarket.auth.dto.*;
 import com.adafangmarket.auth.service.AuthService;
