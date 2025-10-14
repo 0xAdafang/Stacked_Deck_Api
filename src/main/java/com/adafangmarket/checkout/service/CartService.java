@@ -35,21 +35,21 @@ public class CartService {
     @Transactional
     public CartItem addItem(UUID userId, AddToCartRequest request) {
         Cart cart = getOrCreateCart(userId);
-        Product product = products.findBySku(request.getSku())
+        Product product = products.findBySku(request.sku())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        Inventory inv = inventory.findBySku(request.getSku())
+        Inventory inv = inventory.findBySku(request.sku())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
 
-        if (!inv.reserve(request.getQuantity())) {
+        if (!inv.reserve(request.quantity())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock");
         }
 
         CartItem existingItem = cart.getItems().stream()
-                .filter(item -> item.getSku().equals(request.getSku()))
+                .filter(item -> item.getSku().equals(request.sku()))
                 .findFirst()
                 .orElse(null);
         if (existingItem != null) {
-            int newQty = existingItem.getQuantity() + request.getQuantity();
+            int newQty = existingItem.getQuantity() + request.quantity();
             if (!inv.reserve(newQty - existingItem.getQuantity())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for additional quantity");
             }
@@ -60,11 +60,11 @@ public class CartService {
 
         CartItem item = CartItem.builder()
                 .cart(cart)
-                .sku(request.getSku())
-                .quantity(request.getQuantity())
+                .sku(request.sku())
+                .quantity(request.quantity())
                 .priceAtAdd(product.getPrice().getEffectiveAmount())
                 .build();
-        cart.getItem().add(item);
+        cart.getItems().add(item);
         carts.save(cart);
         return item;
     }

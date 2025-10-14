@@ -5,6 +5,9 @@ import com.adafangmarket.catalog.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -13,24 +16,29 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(indexes = @Index(name = "idx_cart_userid", columnList = "userId"))
 public class Cart {
     @Id
     @GeneratedValue
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
-
     @Column(nullable = false)
-    private String sku;
+    private UUID userId;
 
-    @Column(nullable = false)
-    private int quantity;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "cart")
+    private List<CartItem> items = new ArrayList<>();
 
-    @Column(nullable = false)
-    private Long priceAtAdd;
+    private Instant createdAt = Instant.now();
+    private Instant updatedAt = Instant.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Product product;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 }
