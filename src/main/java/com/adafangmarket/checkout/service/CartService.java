@@ -55,6 +55,7 @@ public class CartService {
             }
             existingItem.setQuantity(newQty);
             existingItem.setPriceAtAdd(product.getPrice().getEffectiveAmount());
+            existingItem.setProduct(product);
             return existingItem;
         }
 

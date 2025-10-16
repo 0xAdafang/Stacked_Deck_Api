@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/ws/**", "/actuator/health").permitAll()
                         .requestMatchers("/api/catalog/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/cart/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthFilter(jwt, users), BasicAuthenticationFilter.class);
         return http.build();
