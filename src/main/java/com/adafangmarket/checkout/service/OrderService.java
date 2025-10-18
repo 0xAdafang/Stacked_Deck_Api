@@ -12,6 +12,7 @@ import com.adafangmarket.checkout.dto.CheckoutRequest;
 import com.adafangmarket.checkout.enums.OrderStatus;
 import com.adafangmarket.checkout.repo.CartRepository;
 import com.adafangmarket.checkout.repo.OrderRepository;
+import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
@@ -94,7 +95,7 @@ public class OrderService {
     @Transactional
     public void handlePaymentWebhook(String paymentIntentId, String status) {
         Order order = orderRepository.
-                findByStripePaymentIntendId(paymentIntentId)
+                findByStripePaymentIntentId(paymentIntentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
         order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
         orderRepository.save(order);
