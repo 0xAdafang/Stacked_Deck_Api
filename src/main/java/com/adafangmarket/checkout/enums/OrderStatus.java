@@ -1,4 +1,5 @@
 package com.adafangmarket.checkout.enums;
 
-public class OrderStatus {
+public enum OrderStatus {
+    PENDING, PAID, SHIPPED, CANCELLED, DELIVERED;
 }
