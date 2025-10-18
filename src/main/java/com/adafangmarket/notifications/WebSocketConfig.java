@@ -1,7 +1,12 @@
 package com.adafangmarket.notifications;
 
+import com.adafangmarket.checkout.dto.AddToCartRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
 
@@ -26,6 +31,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(org.springframework.messaging.simp.config.ChannelRegistration registration) {
         registration.interceptors(stompAuthChannelInterceptor);
+    }
+
+    @MessageMapping("/cart/add")
+    public void sendCartUpdate(@Payload AddToCartRequest request, SimpMessageHeaderAccessor headerAccessor) {
     }
 
 }
