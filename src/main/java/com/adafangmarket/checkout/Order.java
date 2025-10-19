@@ -35,8 +35,8 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
 
-    private String stripePaymentIntendId;
-    //Stripe
+    private String stripePaymentIntentId;
+
 
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();

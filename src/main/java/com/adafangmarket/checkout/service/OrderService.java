@@ -54,6 +54,7 @@ public class OrderService {
             if (!inv.reserve(item.getQuantity())) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for " + item.getSku());
             }
+            total += item.getPriceAtAdd() * item.getQuantity();
         }
 
         String paymentIntentId;
@@ -73,19 +74,24 @@ public class OrderService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Payment intent creation failed");
         }
 
-        Order order = Order.builder()
+        final Order order = Order.builder()
                 .userId(userId)
                 .totalAmount(total)
                 .stripePaymentIntentId(paymentIntentId)
-                .items(cart.getItems().stream().map(item -> OrderItem.builder()
+                .build();
+
+        List<OrderItem> orderItems = cart.getItems().stream()
+                .map(item -> OrderItem.builder()
                         .order(order)
                         .sku(item.getSku())
                         .quantity(item.getQuantity())
                         .price(item.getPriceAtAdd())
-                        .build()).collect(Collectors.toList()))
-                .build();
+                        .build())
+                .collect(Collectors.toList());
 
-        order = orderRepository.save(order);
+        order.setItems(orderItems);
+
+        Order savedOrder = orderRepository.save(order);
         cartRepository.delete(cart);
 
         return order;
@@ -99,7 +105,6 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
         order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
         orderRepository.save(order);
-        }
     }
-
 }
+
