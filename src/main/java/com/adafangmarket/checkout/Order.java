@@ -16,10 +16,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(indexes = @Index(name= "idx_order_userid", columnList = "userId"))
+@Table(
+        name = "orders",
+        indexes = @Index(name= "idx_order_userid", columnList = "userId"))
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
     @Column(nullable = false)
