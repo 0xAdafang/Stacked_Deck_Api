@@ -4,7 +4,7 @@ import com.adafangmarket.auth.VerificationToken;
 import com.adafangmarket.auth.dto.*;
 import com.adafangmarket.auth.repo.VerificationTokenRepository;
 import com.adafangmarket.notifications.service.EmailService;
-import com.adafangmarket.notifications.service.NotifyService;
+import com.adafangmarket.notifications.service.NotificationService;
 import com.adafangmarket.security.service.JwtService;
 import com.adafangmarket.user.*;
 import com.adafangmarket.user.dto.*;
@@ -27,7 +27,7 @@ public class AuthService {
     private final VerificationTokenRepository tokens;
     private final PasswordEncoder encoder;
     private final JwtService jwt;
-    private final NotifyService notify;
+    private final NotificationService notify;
     private final EmailService email;
     private final RefreshTokenService refreshTokens;
 
