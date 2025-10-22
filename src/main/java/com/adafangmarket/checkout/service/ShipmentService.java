@@ -6,6 +6,7 @@ import com.adafangmarket.checkout.enums.OrderStatus;
 import com.adafangmarket.checkout.enums.ShipmentStatus;
 import com.adafangmarket.checkout.repo.OrderRepository;
 import com.adafangmarket.checkout.repo.ShipmentRepository;
+import com.adafangmarket.notifications.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class ShipmentService {
     private final ShipmentRepository shipments;
     private final OrderRepository orders;
+    private final NotificationService notificationService;
 
     @Transactional
     public Shipment createShipment(UUID orderId, String adressLine1, String city, String postalCode, String country) {
@@ -46,5 +48,7 @@ public class ShipmentService {
         shipment.setStatus(status);
         shipment.setTrackingNumber(trackingNumber);
         shipments.save(shipment);
+
+        notificationService.sendNotification(shipment.getOrder().getUserId().toString(), "Expedition status #" + shipment.getId() + " updated : " + status, shipment.getOrder().getId().toString(), shipment.getId().toString());
     }
 }
