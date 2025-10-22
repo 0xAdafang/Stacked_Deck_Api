@@ -64,7 +64,7 @@ public class AuthService {
         email.send(user.getEmail(), "Verify your email - Adafang's Market",
                 "Welcome " + user.getUsername() + "!\n\n Click to verify: " + link);
 
-        notify.broadcast("🆕 New account created: @" + user.getUsername());
+
 
     }
 
@@ -80,7 +80,7 @@ public class AuthService {
         vt.setConsumedAt(Instant.now());
         tokens.save(vt);
 
-        notify.broadcast("✅ Account Verified: @" + user.getUsername());
+
     }
 
     public AuthResponse login(LoginRequest req) {
