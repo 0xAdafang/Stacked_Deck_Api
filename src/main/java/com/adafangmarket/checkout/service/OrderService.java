@@ -12,6 +12,7 @@ import com.adafangmarket.checkout.dto.CheckoutRequest;
 import com.adafangmarket.checkout.enums.OrderStatus;
 import com.adafangmarket.checkout.repo.CartRepository;
 import com.adafangmarket.checkout.repo.OrderRepository;
+import com.adafangmarket.notifications.service.NotificationService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -35,6 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final InventoryRepository inventoryRepository;
+    private final NotificationService notificationService;
 
     @Value("${stripe.api.key}")
     private String stripeApiKey;
@@ -93,6 +95,8 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
         cartRepository.delete(cart);
+
+        notificationService.sendNotification(userId.toString(), "Your order #" + order.getId() + " has been created !", order.getId().toString(), null );
 
         return order;
 
