@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/cart/**").hasAnyRole("USER", "ADMIN")
 
-
+ 
                         .anyRequest().authenticated()
                 );
 

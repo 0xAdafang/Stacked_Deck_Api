@@ -26,8 +26,9 @@ public class AuthController {
     @GetMapping("/verify")
     public RedirectView verify(@RequestParam String token) {
         service.verify(token);
-        return new RedirectView(frontUrl + "/login?verified");
+        return new RedirectView(frontUrl + "/auth/verify-email?token=" + token);
     }
+
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@CookieValue(name = "${app.refresh.cookie-name}", required = false) String raw) {
