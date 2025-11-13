@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
-    <groupId>com.adafangmarket</groupId>
-    <artifactId>AdafangMarket</artifactId>
+    <groupId>com.stackeddeck</groupId>
+    <artifactId>StackedDeck</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>AdafangMarket</name>
-    <description>AdafangMarket</description>
+    <name>StackedDeck</name>
+    <description>StackedDeck</description>
     <url/>
     <licenses>
         <license/>
