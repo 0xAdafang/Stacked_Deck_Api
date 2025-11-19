@@ -53,10 +53,12 @@ public class OrderService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
             Inventory inv = inventoryRepository.findBySku(item.getSku())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
-            if (!inv.reserve(item.getQuantity())) {
+            if (inv.tryReserve(item.getQuantity())) {
+                // reserved successfully -> accumulate total
+                total += item.getPriceAtAdd() * item.getQuantity();
+            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for " + item.getSku());
             }
-            total += item.getPriceAtAdd() * item.getQuantity();
         }
 
         String paymentIntentId;
@@ -111,4 +113,3 @@ public class OrderService {
         orderRepository.save(order);
     }
 }
-

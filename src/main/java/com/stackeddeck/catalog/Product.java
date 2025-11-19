@@ -2,6 +2,7 @@ package com.stackeddeck.catalog;
 
 
 import com.stackeddeck.catalog.enums.ProductType;
+import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.pricing.Price;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,10 +29,17 @@ public class Product {
     @Column(nullable = false) private String name;
     @Column(nullable = false, unique = true) private String slug;
     @Column(columnDefinition = "TEXT") private String description;
+    @Column(nullable = false, unique = true) private String image;
     @ElementCollection private List<String> images = new ArrayList<>();
     @Enumerated(EnumType.STRING) private ProductType type;
+    @Enumerated(EnumType.STRING)
     @Embedded private Price price;
     @ManyToOne(fetch = FetchType.LAZY) private Category category;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rarity rarity;
+    private String cardNumber;
+    private String illustrator;
     private boolean active = true;
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();

@@ -5,7 +5,9 @@ import com.stackeddeck.catalog.Inventory;
 import com.stackeddeck.catalog.Product;
 import com.stackeddeck.catalog.dto.ProductCreateRequest;
 import com.stackeddeck.catalog.dto.ProductDto;
+import com.stackeddeck.catalog.enums.CardCondition;
 import com.stackeddeck.catalog.enums.ProductType;
+import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.catalog.mapper.CatalogMapper;
 import com.stackeddeck.catalog.repo.CategoryRepository;
 import com.stackeddeck.catalog.repo.InventoryRepository;
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -30,7 +33,7 @@ public class ProductService {
     private final InventoryRepository inventory;
     private final CategoryRepository categoryRepository;
 
-    public Page<ProductDto> search(String q, ProductType type, UUID categoryId, Boolean inStock, Pageable pg ) {
+    public Page<ProductDto> search(String q, ProductType type, UUID categoryId, Rarity rarity, CardCondition condition,  Boolean inStock, Pageable pg ) {
         Specification<Product> spec = activeTrue();
 
         if (q != null && !q.isBlank()) spec = spec.and(nameSkuLike(q));
@@ -91,6 +94,13 @@ public class ProductService {
         products.delete(p);
     }
 
+    public List<Rarity> getAvailableRarities(UUID categoryId) {
+        if (categoryId != null) {
+            return products.findDistinctRaritiesByCategoryId(categoryId);
+        }
+        return products.findDistinctRarities();
+    }
+
     private Specification<Product> activeTrue() {
         return (root, cq, cb) -> cb.isTrue(root.get("active"));
 
@@ -109,6 +119,14 @@ public class ProductService {
 
     private Specification<Product> categoryEq(UUID id) {
         return (root, cq, cb) -> cb.equal(root.get("category").get("id"), id);
+    }
+
+    private Specification<Product> rarityEq(Rarity r) {
+        return (root, cq, cb) -> cb.equal(root.get("rarity"), r);
+    }
+
+    private Specification<Product> conditionEq(CardCondition c) {
+        return (root, cq, cb) -> cb.equal(root.get("condition"), c);
     }
 
     private Specification<Product> InventoryAvailable() {

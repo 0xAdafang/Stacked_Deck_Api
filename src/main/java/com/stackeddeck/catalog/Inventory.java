@@ -22,14 +22,13 @@ public class Inventory {
     @Column(nullable = false) private Integer quantityReserved = 0;
     private Instant updatedAt = Instant.now();
 
-    public boolean reserve(int qty) {
+    public boolean tryReserve(int qty) {
         int available = quantityAvailable - quantityReserved;
         if (available >= qty) {
-            quantityReserved =+ qty;
+            quantityReserved += qty; // ✅ Corrigé
             updatedAt = Instant.now();
             return true;
-
-            } return true;
+        }
+        return false; // ✅ Retourne false si échec
     }
-
 }

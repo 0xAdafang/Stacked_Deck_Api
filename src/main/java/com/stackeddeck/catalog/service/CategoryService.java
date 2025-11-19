@@ -3,6 +3,7 @@ package com.stackeddeck.catalog.service;
 import com.stackeddeck.catalog.Category;
 import com.stackeddeck.catalog.dto.CategoryDto;
 import com.stackeddeck.catalog.repo.CategoryRepository;
+import com.stackeddeck.catalog.repo.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categories;
+    private final ProductRepository products;
 
     public Category findById(UUID id) {
         return categories.findById(id)
@@ -26,6 +28,13 @@ public class CategoryService {
                 .stream().map(this::toDto).toList();
     }
 
+    public List<CategoryDto> getFeaturedCategories() {
+        return categories.findByParentIsNullOrderByPositionAsc()
+                .stream()
+                .filter(Category::isFeatured)
+                .map(this::toDtoWithCount)
+                .toList();
+    }
     public CategoryDto create(CategoryDto dto) {
         if (categories.findBySlug(dto.slug()).isPresent())
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Slug already exists");
@@ -61,6 +70,19 @@ public class CategoryService {
     }
 
     private CategoryDto toDto(Category c) {
-        return new CategoryDto(c.getId(), c.getName(), c.getSlug(), c.getParent()!=null? c.getParent().getId():null, c.getPosition());
+        return new CategoryDto(c.getId(), c.getName(), c.getSlug(), c.getImage(), c.getParent()!=null? c.getParent().getId():null, c.getPosition(), null);
+    }
+
+    private CategoryDto toDtoWithCount(Category c) {
+        long cardCount = products.countByCategoryId(c.getId());
+        return new CategoryDto (
+                c.getId(),
+                c.getName(),
+                c.getSlug(),
+                c.getImage(),
+                c.getParent()!=null ? c.getParent().getId() : null,
+                c.getPosition(),
+                cardCount
+        );
     }
 }

@@ -1,9 +1,10 @@
 package com.stackeddeck.catalog.controller;
 
-
 import com.stackeddeck.catalog.dto.CategoryDto;
 import com.stackeddeck.catalog.dto.ProductDto;
+import com.stackeddeck.catalog.enums.CardCondition;
 import com.stackeddeck.catalog.enums.ProductType;
+import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.catalog.service.ProductService;
 import com.stackeddeck.catalog.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +25,23 @@ public class CatalogController {
 
     @GetMapping("/products")
     public Page<ProductDto> list(
-            @RequestParam(required=false) String q,
-            @RequestParam(required=false) ProductType type,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) ProductType type,
             @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Rarity rarity,
+            @RequestParam(required = false) CardCondition condition,
             @RequestParam(required = false) Boolean inStock,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "24") int size,
-            @RequestParam(defaultValue = "createdAt, desc") String sort
-
+            @RequestParam(defaultValue = "createdAt,desc") String sort
     ) {
         var parts = sort.split(",");
-        var pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(parts[1].trim()), parts[0].trim()));
-        return productService.search(q, type, categoryId, inStock, pageable);
+        var pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.fromString(parts[1].trim()), parts[0].trim())
+        );
+        return productService.search(q, type, categoryId, rarity, condition, inStock, pageable);
     }
 
     @GetMapping("/products/{slug}")

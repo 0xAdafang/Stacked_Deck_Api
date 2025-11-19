@@ -40,7 +40,9 @@ public class CartService {
         Inventory inv = inventory.findBySku(request.sku())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
 
-        if (!inv.reserve(request.quantity())) {
+        if (inv.tryReserve(request.quantity())) {
+            // reserved successfully, proceed to add to cart
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock");
         }
 
@@ -50,7 +52,9 @@ public class CartService {
                 .orElse(null);
         if (existingItem != null) {
             int newQty = existingItem.getQuantity() + request.quantity();
-            if (!inv.reserve(newQty - existingItem.getQuantity())) {
+            if (inv.tryReserve(newQty - existingItem.getQuantity())) {
+                // reserved additional quantity successfully
+            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for additional quantity");
             }
             existingItem.setQuantity(newQty);
