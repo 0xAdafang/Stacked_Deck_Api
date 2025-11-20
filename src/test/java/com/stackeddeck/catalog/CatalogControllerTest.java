@@ -2,6 +2,9 @@ package com.stackeddeck.catalog;
 
 import com.stackeddeck.catalog.controller.CatalogController;
 import com.stackeddeck.catalog.dto.ProductDto;
+import com.stackeddeck.catalog.enums.CardCondition;
+import com.stackeddeck.catalog.enums.ProductType;
+import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.catalog.service.CategoryService;
 import com.stackeddeck.catalog.service.ProductService;
 import com.stackeddeck.pricing.Price;
@@ -10,17 +13,22 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Instant;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CatalogController.class)
 public class CatalogControllerTest {
+
     @Autowired
     MockMvc mockMvc;
 
@@ -32,39 +40,59 @@ public class CatalogControllerTest {
 
     @Test
     void products_ok() throws Exception {
-        Mockito.when(productService.search(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-                .thenReturn(Page.empty());
+        Page<ProductDto> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 24), 0);
+
+        Mockito.when(productService.search(
+                Mockito.anyString(),
+                Mockito.any(ProductType.class),
+                Mockito.any(UUID.class),
+                Mockito.any(Rarity.class),
+                Mockito.any(CardCondition.class),
+                Mockito.any(Boolean.class),
+                Mockito.any(PageRequest.class)
+        )).thenReturn(emptyPage);
+
         mockMvc.perform(get("/api/catalog/products"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").value(0));
     }
 
     @Test
     void product_with_promo() throws Exception {
-        var product = Product.builder()
-                .price(Price.builder()
-                        .baseAmount(10000L)
-                        .promoAmount(8000L)
-                        .promoStart(Instant.now().minusSeconds(3600))
-                        .promoEnd(Instant.now().plusSeconds(3600))
-                        .build())
-                .build();
+        UUID fakeId = UUID.randomUUID();
 
-        Mockito.when(productService.getBySlug("test"))
-                .thenReturn(new ProductDto(
-                        product.getId(),
-                        "sku",
-                        "name",
-                        "slug",
-                        null,
-                        null,
-                        null,
-                        8000L,
-                        "CAD",
-                        8000L,
-                        null,
-                        true));
+        ProductDto dto = new ProductDto(
+                fakeId,
+                "SKU-CHARIZARD-001",
+                "Charizard ex",
+                "charizard-ex",
+                "Magnifique carte full art...",
+                List.of(
+                        "https://example.com/char1.jpg",
+                        "https://example.com/char2.jpg"
+                ),
+                ProductType.SINGLE_CARD,
+                8000L,
+                "CAD",
+                10000L,
+                null,
+                true
+        );
 
-        mockMvc.perform(get("/api/catalog/products/test"))
-                .andExpect(jsonPath("$.priceAmount").value(8000L));
+        Mockito.when(productService.getBySlug("charizard-ex"))
+                .thenReturn(dto);
+
+        mockMvc.perform(get("/api/catalog/products/charizard-ex"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(fakeId.toString()))
+                .andExpect(jsonPath("$.slug").value("charizard-ex"))
+                .andExpect(jsonPath("$.name").value("Charizard ex"))
+                .andExpect(jsonPath("$.price").value(8000L))
+                .andExpect(jsonPath("$.promoAmount").value(10000L))
+                .andExpect(jsonPath("$.currency").value("CAD"))
+                .andExpect(jsonPath("$.type").value("SINGLE_CARD"))
+                .andExpect(jsonPath("$.images").isArray())
+                .andExpect(jsonPath("$.images.length()").value(2));
     }
 }

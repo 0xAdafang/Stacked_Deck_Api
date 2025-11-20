@@ -142,4 +142,8 @@ public class ProductService {
             return cb.greaterThan(sub, 0L);
         };
     }
+
+    public Page<ProductDto> featured(Pageable pageable) {
+        return products.findFeaturedProducts(pageable).map(mapper::toDto);
+    }
 }

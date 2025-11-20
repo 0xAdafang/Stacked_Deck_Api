@@ -43,7 +43,7 @@ public class JwtAuthFilter extends GenericFilter {
         }
 
 
-        if (uri.startsWith("/api/auth/")) {
+        if (uri.startsWith("/api/auth/") || uri.startsWith("/api/public/")) {
             chain.doFilter(req, res);
             return;
         }

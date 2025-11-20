@@ -53,4 +53,5 @@ public class CatalogController {
     public List<CategoryDto> categories() {
         return categoryService.treeRoot();
     }
+
 }

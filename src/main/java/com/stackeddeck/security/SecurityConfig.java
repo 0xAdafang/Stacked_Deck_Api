@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(reg -> reg
 
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
 
 
                         .requestMatchers(HttpMethod.POST, "/api/auth/signin").permitAll()
