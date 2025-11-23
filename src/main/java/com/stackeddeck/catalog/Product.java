@@ -36,7 +36,7 @@ public class Product {
     @Embedded private Price price;
     @ManyToOne(fetch = FetchType.LAZY) private Category category;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private Rarity rarity;
     private String cardNumber;
     private String illustrator;
