@@ -19,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/catalog")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class CatalogController {
     private final ProductService productService;
     private final CategoryService categoryService;
@@ -28,6 +29,8 @@ public class CatalogController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) ProductType type,
             @RequestParam(required = false) UUID categoryId,
+            @RequestParam(required = false) Long minPrice,
+            @RequestParam(required = false) Long maxPrice,
             @RequestParam(required = false) Rarity rarity,
             @RequestParam(required = false) CardCondition condition,
             @RequestParam(required = false) Boolean inStock,

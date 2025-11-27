@@ -1,5 +1,9 @@
 package com.stackeddeck.catalog.enums;
 
 public enum ProductType {
-    SINGLE_CARD, ETB, BOOSTER, BUNDLE, ACCESSORY
+    SINGLE,
+    BOOSTER_PACK,
+    ETB,
+    BOOSTER_BOX,
+    BUNDLE
 }

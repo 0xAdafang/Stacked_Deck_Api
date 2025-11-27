@@ -1,6 +1,5 @@
 package com.stackeddeck.catalog.mapper;
 
-
 import com.stackeddeck.catalog.Category;
 import com.stackeddeck.catalog.Product;
 import com.stackeddeck.catalog.dto.ProductCreateRequest;
@@ -14,13 +13,24 @@ import java.util.ArrayList;
 @Component
 @RequiredArgsConstructor
 public class CatalogMapper {
+
     public ProductDto toDto(Product p) {
-        return new ProductDto(p.getId(), p.getSku(), p.getName(), p.getSlug(), p.getDescription(),
-                p.getImages(), p.getType(), p.getPrice(),
+
+        return new ProductDto(
+                p.getId(),
+                p.getSku(),
+                p.getName(),
+                p.getSlug(),
+                p.getDescription(),
+                p.getImage(),
+                p.getImages(),
+                p.getType(),
+                p.getPrice(),
                 p.getCategory() != null ? p.getCategory().getId() : null,
+                p.getCategory() != null ? p.getCategory().getName() : null,
+                p.getRarity(),
                 p.isActive()
         );
-
     }
 
     public void updateEntity(Product p, ProductCreateRequest r, Category cat) {
@@ -28,7 +38,7 @@ public class CatalogMapper {
         p.setName(r.name());
         p.setSlug(r.slug());
         p.setDescription(r.description());
-        p.setImages(r.images()!=null ? new ArrayList<>(r.images()) : new ArrayList<>());
+        p.setImages(r.images() != null ? new ArrayList<>(r.images()) : new ArrayList<>());
         p.setType(r.type());
         p.setPrice(Price.builder()
                 .baseAmount(r.baseAmount())
@@ -38,6 +48,6 @@ public class CatalogMapper {
                 .promoEnd(r.promoEnd())
                 .build());
         p.setCategory(cat);
-        if (r.active() !=null) p.setActive(r.active());
+        if (r.active() != null) p.setActive(r.active());
     }
 }

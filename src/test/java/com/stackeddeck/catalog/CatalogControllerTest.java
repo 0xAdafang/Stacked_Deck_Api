@@ -68,15 +68,18 @@ public class CatalogControllerTest {
                 "Charizard ex",
                 "charizard-ex",
                 "Magnifique carte full art...",
+                "https://example.com/char1.jpg", // image (first image)
                 List.of(
                         "https://example.com/char1.jpg",
                         "https://example.com/char2.jpg"
                 ),
-                ProductType.SINGLE_CARD,
+                ProductType.SINGLE,
                 8000L,
                 "CAD",
                 10000L,
-                null,
+                null, // categoryId
+                null, // categoryName
+                Rarity.ULTRA_RARE,
                 true
         );
 
@@ -91,7 +94,7 @@ public class CatalogControllerTest {
                 .andExpect(jsonPath("$.price").value(8000L))
                 .andExpect(jsonPath("$.promoAmount").value(10000L))
                 .andExpect(jsonPath("$.currency").value("CAD"))
-                .andExpect(jsonPath("$.type").value("SINGLE_CARD"))
+                .andExpect(jsonPath("$.type").value("SINGLE"))
                 .andExpect(jsonPath("$.images").isArray())
                 .andExpect(jsonPath("$.images.length()").value(2));
     }
