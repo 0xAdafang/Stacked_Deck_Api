@@ -35,10 +35,7 @@ public class PublicController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size
     ) {
-        return productService.search(
-                null, null, null, null, null, true,
-                PageRequest.of(page, size)
-        );
+        return productService.featured(PageRequest.of(page, size));
     }
 
     @GetMapping("/rarities")

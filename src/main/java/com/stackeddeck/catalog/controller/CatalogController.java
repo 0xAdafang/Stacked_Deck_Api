@@ -44,7 +44,7 @@ public class CatalogController {
                 size,
                 Sort.by(Sort.Direction.fromString(parts[1].trim()), parts[0].trim())
         );
-        return productService.search(q, type, categoryId, rarity, condition, inStock, pageable);
+        return productService.search(q, type, categoryId,minPrice, maxPrice, rarity, condition, inStock, pageable);
     }
 
     @GetMapping("/products/{slug}")

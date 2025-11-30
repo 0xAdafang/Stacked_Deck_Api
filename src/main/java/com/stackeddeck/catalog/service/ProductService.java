@@ -33,15 +33,16 @@ public class ProductService {
     private final InventoryRepository inventory;
     private final CategoryRepository categoryRepository;
 
-    public Page<ProductDto> search(String q, ProductType type, UUID categoryId, Rarity rarity, CardCondition condition,  Boolean inStock, Pageable pg ) {
-        Specification<Product> spec = activeTrue();
+    public Page<ProductDto> search(String q, ProductType type, UUID categoryId,
+                                   Long minPrice, Long maxPrice,
+                                   Rarity rarity, CardCondition condition, Boolean inStock, Pageable pageable) {
 
-        if (q != null && !q.isBlank()) spec = spec.and(nameSkuLike(q));
-        if (type != null) spec = spec.and(typeEq(type));
-        if( categoryId != null ) spec = spec.and(categoryEq(categoryId));
-        if (Boolean.TRUE.equals(inStock)) spec = spec.and(InventoryAvailable());
+        Specification<Product> spec = ProductSpecification.withFilters(
+                q, type, categoryId, minPrice, maxPrice, rarity, condition, inStock
+        );
 
-        return products.findAll(spec, pg).map(mapper::toDto);
+        return products.findAll(spec, pageable)
+                .map(mapper::toDto);
     }
 
     public ProductDto getBySlug(String slug) {

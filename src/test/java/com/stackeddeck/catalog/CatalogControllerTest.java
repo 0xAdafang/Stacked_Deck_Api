@@ -46,6 +46,8 @@ public class CatalogControllerTest {
                 Mockito.anyString(),
                 Mockito.any(ProductType.class),
                 Mockito.any(UUID.class),
+                Mockito.any(Long.class),
+                Mockito.any(Long.class),
                 Mockito.any(Rarity.class),
                 Mockito.any(CardCondition.class),
                 Mockito.any(Boolean.class),
@@ -68,7 +70,7 @@ public class CatalogControllerTest {
                 "Charizard ex",
                 "charizard-ex",
                 "Magnifique carte full art...",
-                "https://example.com/char1.jpg", // image (first image)
+                "https://example.com/char1.jpg",
                 List.of(
                         "https://example.com/char1.jpg",
                         "https://example.com/char2.jpg"
@@ -77,8 +79,8 @@ public class CatalogControllerTest {
                 8000L,
                 "CAD",
                 10000L,
-                null, // categoryId
-                null, // categoryName
+                null,
+                null,
                 Rarity.ULTRA_RARE,
                 true
         );
