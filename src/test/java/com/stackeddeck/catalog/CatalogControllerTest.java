@@ -1,3 +1,4 @@
+// java
 package com.stackeddeck.catalog;
 
 import com.stackeddeck.catalog.controller.CatalogController;
@@ -71,10 +72,7 @@ public class CatalogControllerTest {
                 "charizard-ex",
                 "Magnifique carte full art...",
                 "https://example.com/char1.jpg",
-                List.of(
-                        "https://example.com/char1.jpg",
-                        "https://example.com/char2.jpg"
-                ),
+                List.of("https://example.com/char1.jpg"),
                 ProductType.SINGLE,
                 8000L,
                 "CAD",
@@ -82,6 +80,8 @@ public class CatalogControllerTest {
                 null,
                 null,
                 Rarity.ULTRA_RARE,
+                CardCondition.NEAR_MINT,
+                10,
                 true
         );
 

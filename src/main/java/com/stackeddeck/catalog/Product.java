@@ -1,6 +1,7 @@
 package com.stackeddeck.catalog;
 
 
+import com.stackeddeck.catalog.enums.CardCondition;
 import com.stackeddeck.catalog.enums.ProductType;
 import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.pricing.Price;
@@ -36,8 +37,11 @@ public class Product {
     @Embedded private Price price;
     @ManyToOne(fetch = FetchType.LAZY) private Category category;
     @Enumerated(EnumType.STRING)
+    private CardCondition condition;
     //@Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Rarity rarity;
+    private Integer stockQuantity = 0;
     private String cardNumber;
     private String illustrator;
     private boolean active = true;

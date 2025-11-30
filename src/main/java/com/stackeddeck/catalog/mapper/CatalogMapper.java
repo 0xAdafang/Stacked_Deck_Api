@@ -29,6 +29,8 @@ public class CatalogMapper {
                 p.getCategory() != null ? p.getCategory().getId() : null,
                 p.getCategory() != null ? p.getCategory().getName() : null,
                 p.getRarity(),
+                p.getCondition(),
+                p.getStockQuantity(),
                 p.isActive()
         );
     }

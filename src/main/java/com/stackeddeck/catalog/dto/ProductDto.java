@@ -1,5 +1,6 @@
 package com.stackeddeck.catalog.dto;
 
+import com.stackeddeck.catalog.enums.CardCondition;
 import com.stackeddeck.catalog.enums.ProductType;
 import com.stackeddeck.catalog.enums.Rarity;
 import com.stackeddeck.pricing.Price;
@@ -23,16 +24,18 @@ public record ProductDto(
         UUID categoryId,
         String categoryName,
         Rarity rarity,
+        CardCondition condition,
+        Integer stockQuantity,
         boolean active
 ) {
 
     public ProductDto(UUID id, String sku, String name, String slug, String description,
                       String image, List<String> images, ProductType type, Price price,
-                      UUID categoryId, String categoryName, Rarity rarity, boolean active) {
+                      UUID categoryId, String categoryName, Rarity rarity, CardCondition condition, Integer stockQuantity, boolean active) {
         this(id, sku, name, slug, description, image, images, type,
                 price != null ? price.getEffectiveAmount() : null,
                 price != null ? price.getCurrency() : null,
                 price != null ? price.getPromoAmount() : null,
-                categoryId, categoryName, rarity, active);
+                categoryId, categoryName, rarity, condition, stockQuantity, active);
     }
 }
