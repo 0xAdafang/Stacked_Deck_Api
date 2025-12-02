@@ -32,6 +32,9 @@ public class CartItem {
     @Column(nullable = false)
     private Long priceAtAdd;
 
+    @Column(nullable = false)
+    private boolean savedForLater = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

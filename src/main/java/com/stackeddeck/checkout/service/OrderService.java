@@ -56,9 +56,9 @@ public class OrderService {
             if (inv.tryReserve(item.getQuantity())) {
                 // reserved successfully -> accumulate total
                 total += item.getPriceAtAdd() * item.getQuantity();
-            } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for " + item.getSku());
             }
+            total += item.getPriceAtAdd() * item.getQuantity();
         }
 
         String paymentIntentId;

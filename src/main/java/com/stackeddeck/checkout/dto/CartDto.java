@@ -1,4 +1,14 @@
 package com.stackeddeck.checkout.dto;
 
-public class CartDto {
-}
+
+import java.util.List;
+import java.util.UUID;
+
+
+public record CartDto (
+
+        UUID id,
+        List<CartItemDto> items,
+        long totalAmount,
+        int totalItems
+) {}

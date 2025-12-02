@@ -3,18 +3,20 @@ package com.stackeddeck.checkout.service;
 
 import com.stackeddeck.catalog.Inventory;
 import com.stackeddeck.catalog.Product;
+import com.stackeddeck.catalog.dto.ProductDto;
 import com.stackeddeck.catalog.repo.InventoryRepository;
 import com.stackeddeck.catalog.repo.ProductRepository;
 import com.stackeddeck.checkout.Cart;
 import com.stackeddeck.checkout.CartItem;
 import com.stackeddeck.checkout.dto.AddToCartRequest;
+import com.stackeddeck.checkout.dto.CartDto;
+import com.stackeddeck.checkout.mapper.CartMapper;
 import com.stackeddeck.checkout.repo.CartRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.UUID;
 
 @Service
@@ -23,9 +25,15 @@ public class CartService {
     private final CartRepository carts;
     private final ProductRepository products;
     private final InventoryRepository inventory;
+    private final CartMapper cartMapper;
 
     @Transactional
-    public Cart getOrCreateCart(UUID userId) {
+    public CartDto getMyCart(UUID userId) {
+        Cart cart = getOrCreateCartEntity(userId);
+        return cartMapper.toDto(cart);
+    }
+
+    private Cart getOrCreateCartEntity(UUID userId) {
         return carts.findByUserId(userId).orElseGet(() ->  {
             Cart newCart = Cart.builder().userId(userId).build();
             return carts.save(newCart);
@@ -33,64 +41,78 @@ public class CartService {
     }
 
     @Transactional
-    public CartItem addItem(UUID userId, AddToCartRequest request) {
-        Cart cart = getOrCreateCart(userId);
+    public void addItem(UUID userId, AddToCartRequest request) {
+        Cart cart = getOrCreateCartEntity(userId);
         Product product = products.findBySku(request.sku())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
-        Inventory inv = inventory.findBySku(request.sku())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
 
-        if (inv.tryReserve(request.quantity())) {
-            // reserved successfully, proceed to add to cart
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock");
-        }
+
 
         CartItem existingItem = cart.getItems().stream()
-                .filter(item -> item.getSku().equals(request.sku()))
+                .filter(item -> item.getSku().equals(request.sku()) && !item.isSavedForLater())
                 .findFirst()
                 .orElse(null);
-        if (existingItem != null) {
-            int newQty = existingItem.getQuantity() + request.quantity();
-            if (inv.tryReserve(newQty - existingItem.getQuantity())) {
-                // reserved additional quantity successfully
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for additional quantity");
-            }
-            existingItem.setQuantity(newQty);
-            existingItem.setPriceAtAdd(product.getPrice().getEffectiveAmount());
-            existingItem.setProduct(product);
-            return existingItem;
-        }
 
-        CartItem item = CartItem.builder()
-                .cart(cart)
-                .sku(request.sku())
-                .quantity(request.quantity())
-                .priceAtAdd(product.getPrice().getEffectiveAmount())
-                .build();
-        cart.getItems().add(item);
+        if (existingItem != null) {
+            existingItem.setQuantity(existingItem.getQuantity() + request.quantity());
+
+        } else {
+            CartItem item = CartItem.builder()
+                    .cart(cart)
+                    .sku(request.sku())
+                    .quantity(request.quantity())
+                    .priceAtAdd(product.getPrice().getEffectiveAmount())
+                    .product(product)
+                    .savedForLater(false)
+                    .build();
+            cart.getItems().add(item);
+        }
         carts.save(cart);
-        return item;
+    }
+
+    @Transactional
+    public void updateQuantity(UUID userId, UUID itemId, int quantity) {
+        Cart cart = getOrCreateCartEntity(userId);
+        CartItem item = findItem(cart, itemId);
+
+        if (quantity <= 0) {
+            cart.getItems().remove(item);
+        } else {
+            item.setQuantity(quantity);
+        }
+        carts.save(cart);
+    }
+
+    @Transactional
+    public void toggleSavedForLater(UUID userId, UUID itemId) {
+        Cart cart = getOrCreateCartEntity(userId);
+        CartItem item = findItem(cart, itemId);
+        item.setSavedForLater(!item.isSavedForLater());
+        carts.save(cart);
     }
 
     @Transactional
     public void removeItem(UUID userId, UUID itemId) {
-        Cart cart = carts.findByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
-        CartItem item = cart.getItems().stream()
-                .filter(i -> i.getId().equals(itemId))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found in cart"));
+        Cart cart = getOrCreateCartEntity(userId);
+        CartItem item = findItem(cart, itemId);
         cart.getItems().remove(item);
         carts.save(cart);
     }
 
     @Transactional
     public void clearCart(UUID userId) {
-        Cart cart = carts.findByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart not found"));
+        Cart cart = getOrCreateCartEntity(userId);
         cart.getItems().clear();
         carts.save(cart);
     }
+
+    private CartItem findItem(Cart cart, UUID itemId) {
+        return cart.getItems().stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item not found"));
+    }
+
+
+
 }
