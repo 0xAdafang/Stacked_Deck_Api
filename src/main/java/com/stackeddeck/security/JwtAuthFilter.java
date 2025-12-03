@@ -69,8 +69,11 @@ public class JwtAuthFilter extends GenericFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
 
+                System.err.println("❌ Erreur JWT : " + e.getMessage());
+
+                SecurityContextHolder.clearContext();
             }
         }
 

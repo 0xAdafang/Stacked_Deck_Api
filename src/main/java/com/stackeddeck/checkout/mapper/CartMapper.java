@@ -4,6 +4,7 @@ package com.stackeddeck.checkout.mapper;
 import com.stackeddeck.catalog.mapper.CatalogMapper;
 import com.stackeddeck.checkout.Cart;
 import com.stackeddeck.checkout.CartItem;
+import com.stackeddeck.checkout.PromoCode;
 import com.stackeddeck.checkout.dto.CartDto;
 import com.stackeddeck.checkout.dto.CartItemDto;
 import lombok.RequiredArgsConstructor;
@@ -15,22 +16,31 @@ public class CartMapper {
 
     private final CatalogMapper productMapper;
 
-    public CartDto toDto(Cart cart) {
+    public CartDto toDto(Cart cart, PromoCode promo) {
         var items = cart.getItems().stream()
                 .map(this::toItemDto)
                 .toList();
 
-        long total = items.stream()
+        long subtotal = items.stream()
                 .filter(i -> !i.savedForLater())
                 .mapToLong(CartItemDto::subtotal)
                 .sum();
+        
 
-        int count = items.stream()
-                .filter (i -> !i.savedForLater())
-                .mapToInt(CartItemDto::quantity)
-                .sum();
+        long discount = 0;
+        if (promo != null && promo.isValid()) {
+            discount = (subtotal * promo.getDiscountPercentage()) / 100;
+        }
 
-        return new CartDto(cart.getId(), items, total, count);
+        return new CartDto(
+                cart.getId(),
+                items,
+                subtotal,
+                discount,
+                subtotal - discount, 
+                cart.getPromoCode(),
+                items.stream().filter(i -> !i.savedForLater()).mapToInt(CartItemDto::quantity).sum()
+        );
     }
 
     private CartItemDto toItemDto(CartItem item) {

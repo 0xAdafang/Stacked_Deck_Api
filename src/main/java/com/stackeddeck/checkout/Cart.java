@@ -40,4 +40,7 @@ public class Cart {
     protected void onUpdate() {
         updatedAt = Instant.now();
     }
+
+    @Column(name = "promo_code")
+    private String promoCode;
 }
