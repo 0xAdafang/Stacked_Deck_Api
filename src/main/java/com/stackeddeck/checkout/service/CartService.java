@@ -95,7 +95,7 @@ public class CartService {
         if (quantity <= 0) {
             cart.getItems().remove(item);
         } else {
-            // Petite sécurité en plus
+
             if (quantity > item.getProduct().getStockQuantity()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Max quantity reached");
             }
