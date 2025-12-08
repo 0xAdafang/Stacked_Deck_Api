@@ -65,11 +65,6 @@ public class ProductService {
         mapper.updateEntity(p, req, cat);
         var saved = products.save(p);
 
-        inventory.findBySku(saved.getSku()).orElseGet(() -> {
-            var inv = Inventory.builder().sku(saved.getSku()).quantityAvailable(0).quantityReserved(0).build();
-            return inventory.save(inv);
-        });
-
         return mapper.toDto(saved);
     }
 
@@ -132,15 +127,7 @@ public class ProductService {
 
     private Specification<Product> InventoryAvailable() {
         return (root, cq, cb) -> {
-            assert cq != null;
-            var sub = cq.subquery(Long.class);
-            var inv = sub.from(Inventory.class);
-            sub.select(cb.count(inv))
-                    .where(cb.and(
-                            cb.equal(inv.get("sku"), root.get("sku")),
-                            cb.greaterThan(cb.diff(inv.get("quantityAvailable"), inv.get("quantityReserved")), 0)
-                    ));
-            return cb.greaterThan(sub, 0L);
+            return cb.greaterThan(root.get("stockQuantity"), 0);
         };
     }
 

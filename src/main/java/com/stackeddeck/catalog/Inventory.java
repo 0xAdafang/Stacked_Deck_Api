@@ -25,10 +25,10 @@ public class Inventory {
     public boolean tryReserve(int qty) {
         int available = quantityAvailable - quantityReserved;
         if (available >= qty) {
-            quantityReserved += qty; // ✅ Corrigé
+            quantityReserved += qty;
             updatedAt = Instant.now();
             return true;
         }
-        return false; // ✅ Retourne false si échec
+        return false;
     }
 }
