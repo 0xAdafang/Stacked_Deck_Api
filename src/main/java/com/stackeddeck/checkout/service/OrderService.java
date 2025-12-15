@@ -9,6 +9,7 @@ import com.stackeddeck.checkout.CartItem;
 import com.stackeddeck.checkout.Order;
 import com.stackeddeck.checkout.OrderItem;
 import com.stackeddeck.checkout.dto.CheckoutRequest;
+import com.stackeddeck.checkout.dto.OrderItemDto;
 import com.stackeddeck.checkout.enums.OrderStatus;
 import com.stackeddeck.checkout.repo.CartRepository;
 import com.stackeddeck.checkout.repo.OrderRepository;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import com.stackeddeck.checkout.dto.OrderResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -54,7 +56,7 @@ public class OrderService {
             Inventory inv = inventoryRepository.findBySku(item.getSku())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Inventory not found"));
             if (inv.tryReserve(item.getQuantity())) {
-                // reserved successfully -> accumulate total
+
                 total += item.getPriceAtAdd() * item.getQuantity();
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient stock for " + item.getSku());
             }
@@ -112,4 +114,32 @@ public class OrderService {
         order.setStatus(OrderStatus.valueOf(status.toUpperCase()));
         orderRepository.save(order);
     }
+
+
+    public List<OrderResponse> getUserOrders(UUID userId) {
+        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private OrderResponse mapToDto(Order order) {
+        List<OrderItemDto> items = order.getItems().stream()
+                .map(item -> new OrderItemDto(
+                        item.getSku(),
+                        item.getQuantity(),
+                        item.getPrice()
+                ))
+                .collect(Collectors.toList());
+
+        return new OrderResponse(
+                order.getId(),
+                order.getCreatedAt(),
+                order.getTotalAmount(),
+                order.getStatus(),
+                items
+        );
+    }
+
+
 }
