@@ -6,12 +6,18 @@ import com.stackeddeck.catalog.dto.ProductCreateRequest;
 import com.stackeddeck.catalog.dto.ProductDto;
 import com.stackeddeck.catalog.service.CategoryService;
 import com.stackeddeck.catalog.service.ProductService;
+import com.stackeddeck.checkout.Order;
+import com.stackeddeck.checkout.enums.OrderStatus;
+import com.stackeddeck.checkout.repo.OrderRepository;
+import com.stackeddeck.checkout.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +27,9 @@ public class AdminCatalogController {
 
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final OrderRepository orderRepository;
+
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/products")
