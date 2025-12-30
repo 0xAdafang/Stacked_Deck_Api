@@ -33,7 +33,7 @@ public class PublicController {
     @GetMapping("/featured-products")
     public Page<ProductDto> getFeaturedProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size
+            @RequestParam(defaultValue = "78") int size
     ) {
         return productService.featured(PageRequest.of(page, size));
     }

@@ -132,6 +132,17 @@ public class ProductService {
     }
 
     public Page<ProductDto> featured(Pageable pageable) {
-        return products.findFeaturedProducts(pageable).map(mapper::toDto);
+
+        return search(
+                null,
+                ProductType.SINGLE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true,
+                pageable
+        );
     }
 }
