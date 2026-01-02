@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 
@@ -71,6 +73,28 @@ public class PaymentService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to create Stripe checkout session", e);
         }
+    }
+
+    @Transactional
+    public void fulfillPayment(String stripeSessionId) {
+        Optional<Payment> paymentOpt = paymentRepository.findByStripeSessionId(stripeSessionId);
+
+        if (paymentOpt.isPresent()) {
+            Payment payment = paymentOpt.get();
+
+            if (payment.getStatus() == PaymentStatus.SUCCESS) {
+                return;
+            }
+
+            payment.setStatus(PaymentStatus.SUCCESS);
+            paymentRepository.save(payment);
+
+            System.out.println("✅ Payment confirmed for user: " + payment.getUserEmail());
+
+        } else {
+            System.out.println("⚠️ Payment with session ID " + stripeSessionId + " not found.");
+        }
+
     }
 
 
