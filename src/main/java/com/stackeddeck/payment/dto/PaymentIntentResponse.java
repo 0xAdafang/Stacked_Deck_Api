@@ -1,4 +1,4 @@
-package com.stackeddeck.checkout.dto;
+package com.stackeddeck.payment.dto;
 
 public class PaymentIntentResponse {
 }
