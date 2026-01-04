@@ -5,105 +5,104 @@
 ![Security](https://img.shields.io/badge/Security-JWT%20%2F%20Spring%20Security-red)
 ![Payment](https://img.shields.io/badge/Payment-Stripe-blueviolet)
 
-**Stacked Deck API** est le backend robuste et sécurisé de la plateforme e-commerce *Stacked Deck*, spécialisée dans la vente de cartes Pokémon TCG.
+**Stacked Deck API** is the robust and secure backend for the *Stacked Deck* e-commerce platform, specialized in Pokémon TCG sales.
 
-Construite avec **Spring Boot**, cette API gère l'intégralité du cycle de vente : de la gestion précise de l'inventaire (état des cartes, rareté) au paiement sécurisé via Stripe, en passant par un système de tickets de support pour les utilisateurs.
+Built with **Spring Boot**, this API manages the entire sales lifecycle: from precise inventory management (card condition, rarity) to secure payments via Stripe, including a complete support ticket system for users.
 
 ---
 
-## 📑 Table des Matières
+## 📑 Table of Contents
 
-- [Fonctionnalités Clés](#-fonctionnalités-clés)
-- [Architecture Modulaire](#-architecture-modulaire)
-- [Technologies & Stack](#-technologies--stack)
+- [Key Features](#-key-features)
+- [Modular Architecture](#-modular-architecture)
+- [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
-- [Documentation API](#-documentation-api)
+- [API Documentation](#-api-documentation)
 - [Configuration](#-configuration)
 
 ---
 
-## 🚀 Fonctionnalités Clés
+## 🚀 Key Features
 
-### 📦 Catalogue & Inventaire
-* **Gestion avancée des produits :** Support des variantes (État : *Mint, Played*, Langue, Rareté).
-* **Navigation publique :** Contrôleurs dédiés pour l'affichage public du catalogue (`PublicController`).
-* **Mouvements de stock :** Suivi précis des entrées/sorties via `InventoryMovement`.
+### 📦 Catalog & Inventory
+* **Advanced Product Management:** Support for variants (Condition: *Mint, Played*, Language, Rarity).
+* **Public Navigation:** Dedicated controllers for public catalog display (`PublicController`).
+* **Inventory Tracking:** Precise tracking of stock entries/exits via `InventoryMovement`.
 
-### 🛒 Achat & Paiement
-* **Parcours d'achat complet :** Gestion de panier (`Cart`), validation de commande (`Checkout`) et expédition (`Shipping`).
-* **Paiement Sécurisé :** Intégration complète avec **Stripe**, incluant la gestion des Webhooks pour les mises à jour de statut en temps réel.
-* **Gestion des Promotions :** Système de codes promo et logique de pricing dynamique.
+### 🛒 Purchase & Payment
+* **Complete Purchase Flow:** Cart management (`Cart`), order validation (`Checkout`), and shipping (`Shipping`).
+* **Secure Payment:** Full integration with **Stripe**, including Webhook handling for real-time status updates.
+* **Promotions Engine:** Promo code system and dynamic pricing logic.
 
-### 🛡️ Sécurité & Utilisateurs
-* **Authentification Forte :** Système basé sur **JWT** (JSON Web Tokens) avec gestion des *Refresh Tokens*.
-* **Gestion de Compte :** Inscription, vérification d'email, réinitialisation de mot de passe et gestion de profil.
-* **Rôles :** Séparation stricte entre les accès Clients et Administrateurs.
+### 🛡️ Security & Users
+* **Strong Authentication:** System based on **JWT** (JSON Web Tokens) with *Refresh Token* management.
+* **Account Management:** Registration, email verification, password reset, and profile management.
+* **Role-Based Access:** Strict separation between Client and Administrator access.
 
-### 🎫 Support Client & Admin
-* **Ticketing :** Système intégré de tickets de support (`Support/Ticket`) pour gérer les demandes utilisateurs.
-* **Dashboard Admin :** Statistiques de vente et vue d'ensemble de l'activité via `AdminDashboardController`.
+### 🎫 Support & Admin
+* **Ticketing System:** Integrated support ticket system (`Support/Ticket`) to handle user inquiries.
+* **Admin Dashboard:** Sales statistics and activity overview via `AdminDashboardController`.
 
 ---
 
-## 🏗 Architecture Modulaire
+## 🏗 Modular Architecture
 
-Le projet suit une architecture claire organisée par domaines fonctionnels (`package-by-feature`) :
+The project follows a clear `package-by-feature` architecture:
 
 ```text
 com.stackeddeck
-├── admin/          # Administration (Dashboard, Gestion Commandes & Catalogue)
-├── auth/           # Authentification (Login, Register, Refresh Token)
-├── catalog/        # Logique Produit (Catégories, Inventory, Enums: Rarity/Condition)
-├── checkout/       # Tunnel d'achat (Cart, Order, Shipping)
-├── common/         # Utilitaires globaux (Global Exception Handler)
+├── admin/          # Administration (Dashboard, Orders & Catalog Management)
+├── auth/           # Authentication (Login, Register, Refresh Token)
+├── catalog/        # Product Logic (Categories, Inventory, Enums: Rarity/Condition)
+├── checkout/       # Purchase Flow (Cart, Order, Shipping)
+├── common/         # Global Utilities (Global Exception Handler)
 ├── config/         # Configuration (CORS, Swagger, Jackson)
-├── notifications/  # Système de notifications
-├── payment/        # Intégration Stripe & Webhooks
-├── pricing/        # Logique de prix et Promotions
-├── security/       # Configuration Spring Security & Filtres JWT
-├── support/        # Service client (Tickets)
-└── user/           # Gestion des profils utilisateurs
+├── notifications/  # Notification System
+├── payment/        # Stripe Integration & Webhooks
+├── pricing/        # Pricing Logic & Promotions
+├── security/       # Spring Security Config & JWT Filters
+├── support/        # Customer Service (Tickets)
+└── user/           # User Profile Management
 ```
 
-## 🛠 Technologies & Stack
-Core : Java 17+, Spring Boot 3.x
+## 🛠 Tech Stack
 
-Data : Spring Data JPA, Hibernate, MySQL/PostgreSQL
+* **Core:** Java 17+, Spring Boot 3.x
+* **Data:** Spring Data JPA, Hibernate, MySQL/PostgreSQL
+* **Security:** Spring Security 6, JJWT (Java JWT)
+* **Payment:** Stripe API
+* **Documentation:** Swagger / OpenAPI (via `SwaggerConfig`)
+* **Build:** Maven
 
-Sécurité : Spring Security 6, JJWT (Java JWT)
+---
 
-Paiement : Stripe API
+## 💻 Installation
 
-Documentation : Swagger / OpenAPI (disponible via SwaggerConfig)
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/0xAdafang/Stacked_Deck_Api.git](https://github.com/0xAdafang/Stacked_Deck_Api.git)
+    ```
 
-Build : Maven
+2.  **Configuration:**
+    Update `src/main/resources/application.properties` with your environment variables (Database, Stripe Keys, JWT Secret).
 
-## Installation
-Cloner le dépôt :
+3.  **Run the application:**
+    ```bash
+    ./mvnw spring-boot:run
+    ```
 
-Bash
-
-git clone [https://github.com/0xAdafang/Stacked_Deck_Api.git](https://github.com/0xAdafang/Stacked_Deck_Api.git)
-Configuration : Mettez à jour src/main/resources/application.properties avec vos variables d'environnement (Base de données, Clés Stripe, JWT Secret).
-
-Lancer l'application :
-
-Bash
-
-./mvnw spring-boot:run
-
-<h2>📡 Documentation API</h2>
-<p>Une fois l'application lancée, la documentation interactive <strong>Swagger UI</strong> est accessible (selon ta configuration) sur :</p>
+<h2>📡 API Documentation</h2>
+<p>Once the application is running, the interactive <strong>Swagger UI</strong> documentation is available at:</p>
 <blockquote>
   <a href="http://localhost:8080/swagger-ui.html">http://localhost:8080/swagger-ui.html</a>
 </blockquote>
 
-<h3>Aperçu des Endpoints Principaux</h3>
+<h3>Main Endpoints Overview</h3>
 <table>
   <thead>
     <tr>
       <th>Module</th>
-      <th>Endpoint Base</th>
+      <th>Base Endpoint</th>
       <th>Description</th>
     </tr>
   </thead>
@@ -116,40 +115,40 @@ Bash
     <tr>
       <td><strong>Public</strong></td>
       <td><code>/api/public</code></td>
-      <td>Accès lecture seule au catalogue</td>
+      <td>Read-only access to catalog</td>
     </tr>
     <tr>
       <td><strong>Cart</strong></td>
       <td><code>/api/cart</code></td>
-      <td>Gestion du panier courant</td>
+      <td>Current cart management</td>
     </tr>
     <tr>
       <td><strong>Checkout</strong></td>
       <td><code>/api/checkout</code></td>
-      <td>Validation de commande</td>
+      <td>Order validation</td>
     </tr>
     <tr>
       <td><strong>Payment</strong></td>
       <td><code>/api/payment</code></td>
-      <td>Initialisation paiement Stripe</td>
+      <td>Stripe payment initialization</td>
     </tr>
     <tr>
       <td><strong>Admin</strong></td>
       <td><code>/api/admin</code></td>
-      <td>Opérations restreintes (CRUD produits, Stats)</td>
+      <td>Restricted operations (Product CRUD, Stats)</td>
     </tr>
     <tr>
       <td><strong>Support</strong></td>
       <td><code>/api/support</code></td>
-      <td>Création et suivi de tickets</td>
+      <td>Ticket creation and tracking</td>
     </tr>
   </tbody>
 </table>
 
-<h2>⚙️ Configuration Requise</h2>
-<p>Assurez-vous de définir les propriétés suivantes pour le bon fonctionnement (notamment pour Stripe et JWT) :</p>
+<h2>⚙️ Required Configuration</h2>
+<p>Ensure you define the following properties for the application to run correctly (especially for Stripe and JWT):</p>
 
-<pre><code class="language-properties"># Base de données
+<pre><code class="language-properties"># Database
 spring.datasource.url=...
 spring.datasource.username=...
 
@@ -163,4 +162,4 @@ stripe.webhook.secret=...
 </code></pre>
 
 <hr>
-<p><em>Développé par <a href="https://github.com/0xAdafang">0xAdafang</a></em></p>
+<p><em>Developed by <a href="https://github.com/0xAdafang">0xAdafang</a></em></p>
